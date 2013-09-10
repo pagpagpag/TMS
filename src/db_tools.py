@@ -3,10 +3,8 @@ Created on Sep 9, 2013
 
 @author: pierreadrienguez
 '''
-from tmsdbspotfx import TMSDataBaseSpotFX
-from tmsdbfutures import TMSDataBaseFutures
-from spotfxtrade import SpotFXTrade
-from futurestrade import FuturesTrade
+from db_models import TMSDataBaseSpotFX, TMSDataBaseFutures
+from trade_models import SpotFXTrade, FuturesTrade
 
 def add_trade(trade):
     """ we can check the type before the connection, so let's do it"""

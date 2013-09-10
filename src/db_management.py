@@ -2,6 +2,8 @@
 Created on Sep 9, 2013
 
 @author: pierreadrienguez
+
+
 '''
 import pprint
 import inspect
@@ -9,15 +11,15 @@ from os.path import exists
 from abc import abstractmethod, ABCMeta
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, DateTime
 from sqlalchemy.engine.result import ResultProxy
-from futurestrade import FuturesTrade
-from spotfxtrade import SpotFXTrade
 from checking_tools import check_trade
 
 DATABASE_FILE = 'trade_management_system.db'    
 DATABASE_PATH = "sqlite:///" + DATABASE_FILE
 
 class TMSDataBase(object):
-    """ all the operations within the data base have to be encapsulated here"""
+    """ all the operations within the data base have to be encapsulated here
+        use an abstract trade_class
+    """
     __metaclass__ = ABCMeta
     
     def __init__(self):

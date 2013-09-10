@@ -5,11 +5,9 @@ Created on Sep 9, 2013
 '''
 import unittest
 import datetime
-from tmsdbfutures import TMSDataBaseFutures
-from tmsdbspotfx import TMSDataBaseSpotFX
-from trmdbtools import add_trade
-from futurestrade import FuturesTrade
-from spotfxtrade import SpotFXTrade
+from trade_models import FuturesTrade, SpotFXTrade
+from db_models import TMSDataBaseFutures, TMSDataBaseSpotFX
+from db_tools import add_trade
 
 class TMSTests(unittest.TestCase):
 
