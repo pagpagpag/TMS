@@ -3,9 +3,9 @@ Created on Sep 9, 2013
 
 @author: pierreadrienguez
 '''
-from src.tmsdb import TMSDataBase
-from src.spotfxtrade import SpotFXTrade
 from sqlalchemy import Column, Integer, String, DateTime, Float
+from tmsdb import TMSDataBase
+from spotfxtrade import SpotFXTrade
 
 class TMSDataBaseSpotFX(TMSDataBase):
     

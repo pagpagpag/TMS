@@ -3,9 +3,11 @@ Created on Sep 9, 2013
 
 @author: pierreadrienguez
 '''
-from abc import abstractmethod
+from abc import abstractmethod, ABCMeta
 
-class Trade:
+class Trade(object):
+    __metaclass__ = ABCMeta
+    
     @staticmethod
     @abstractmethod
     def get_variables_names():

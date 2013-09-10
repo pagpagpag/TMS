@@ -4,8 +4,8 @@ Created on Sep 9, 2013
 @author: pierreadrienguez
 '''
 import datetime
-from src.trade import Trade
-from src.checking_tools import typecheck, trader_check, symbol_check, year_check,\
+from trade import Trade
+from checking_tools import typecheck, trader_check, symbol_check, year_check,\
     month_check, datetime_check
 
 FUTURES_TRADE_VARIABLES_NAMES = ["id", "datetime", "symbol", "month", 

@@ -4,8 +4,8 @@ Created on Sep 9, 2013
 @author: pierreadrienguez
 '''
 import datetime
-from src.trade import Trade
-from src.checking_tools import typecheck, trader_check, currency_pair_check,\
+from trade import Trade
+from checking_tools import typecheck, trader_check, currency_pair_check,\
     datetime_check
 
 SPOT_FX_TRADE_VARIABLES_NAMES = ["id", "datetime", "symbol", "currency_pair",
@@ -66,7 +66,7 @@ class SpotFXTrade(Trade):
         return SpotFXTrade(-1, dt, "AUDUSD", 1000000.0, 0.9205, "damien")
      
 if __name__ == '__main__':
-    spotfxt = SpotFXTrade.get_spot_fx_trade_example()
+    spotfxt = SpotFXTrade.get_trade_example()
     #print(spotfxt.__dict__)
     #print(spotfxt.to_string())
     print(SpotFXTrade.__init__)

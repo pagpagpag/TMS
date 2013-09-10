@@ -35,30 +35,29 @@ def typecheck(f):
         return result
     return decorated
     
-def check_trade(trade, trade_class) -> bool:
+def check_trade(trade, trade_class):
     if not isinstance(trade, trade_class):
         message = trade.to_string() if hasattr(trade, "to_string") else "Unknown"
         raise TypeError("The following is not a %s trade \n %s" % 
                         (trade_class.__name__, message))
     return True    
     
-
 def datetime_check(datetime):
     pass #TODO
     
-def trader_check(trader: str) -> None:
+def trader_check(trader):
     if trader not in TRADERS_LIST:
         raise ValueError("Trader %s traded but is not in the list of traders" % trader)
             
-def symbol_check(symbol: str) -> None:
+def symbol_check(symbol):
     # TODO:
     pass
 
-def currency_pair_check(currency_pair: str) -> None:
+def currency_pair_check(currency_pair):
     # TODOm
     pass
 
-def year_check(year: int) -> None:
+def year_check(year):
     if year < 2012:
         raise ValueError("How did you trade an expired product " +
                          "(expired in %d)?" % year)
@@ -66,6 +65,6 @@ def year_check(year: int) -> None:
         raise ValueError("How can you trade a product with such " +
                          " a big maturity (expiration year %d)?" % year)
     
-def month_check(month: int) -> None:
+def month_check(month):
     if not 0 < month < 13:
         raise ValueError("Impossible month: %d" % month)

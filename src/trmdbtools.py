@@ -3,10 +3,10 @@ Created on Sep 9, 2013
 
 @author: pierreadrienguez
 '''
-from src.spotfxtrade import SpotFXTrade
-from src.futurestrade import FuturesTrade
-from src.tmsdbspotfx import TMSDataBaseSpotFX
-from src.tmsdbfutures import TMSDataBaseFutures
+from tmsdbspotfx import TMSDataBaseSpotFX
+from tmsdbfutures import TMSDataBaseFutures
+from spotfxtrade import SpotFXTrade
+from futurestrade import FuturesTrade
 
 def add_trade(trade):
     """ we can check the type before the connection, so let's do it"""

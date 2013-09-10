@@ -3,9 +3,9 @@ Created on Sep 9, 2013
 
 @author: pierreadrienguez
 '''
-from src.tmsdb import TMSDataBase
-from src.futurestrade import FuturesTrade
 from sqlalchemy import Column, Integer, String, DateTime, Float
+from tmsdb import TMSDataBase
+from futurestrade import FuturesTrade
 
 class TMSDataBaseFutures(TMSDataBase):
     
@@ -24,5 +24,18 @@ class TMSDataBaseFutures(TMSDataBase):
                 )
 
 if __name__ == '__main__':
+    #db = TMSDataBase()
     db = TMSDataBaseFutures()
-    print(db.get_all_table_as_trades())
+    ft = FuturesTrade.get_trade_example()
+    #db.add_trade(ft)
+    #db.add_trade(ft)
+    #db.add_trade(ft)
+    #db.display_table()
+    #db.cancel_trade(42)
+    #db.display_table()
+    #db.clean_table()
+    #db.get_all_table_as_trades()
+    print(db.select_trade_from_id(1))
+    db.amend_trade_with_trade(1, ft)
+    #print(db.select_trade_from_id(1))
+    #db.display_table()
