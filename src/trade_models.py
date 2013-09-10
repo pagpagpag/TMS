@@ -11,7 +11,7 @@ from checking_tools import typecheck, trader_check, symbol_check, year_check,\
 
 FUTURES_TRADE_VARIABLES_NAMES = ["id", "datetime", "symbol", "month", 
                                  "year", "num_contracts", "price", "trader"]
-SPOT_FX_TRADE_VARIABLES_NAMES = ["id", "datetime", "symbol", "currency_pair",
+SPOT_FX_TRADE_VARIABLES_NAMES = ["id", "datetime", "currency_pair",
                                  "size", "price", "trader"]
 
 
@@ -72,7 +72,8 @@ class FuturesTrade(Trade):
         month_check(month)
         year_check(year)
         trader_check(trader)
-        return tuple.__new__(cls, (id, datetime, symbol, month, year, num_contracts, price, trader))
+        return tuple.__new__(cls, 
+            (id, datetime, symbol, month, year, num_contracts, price, trader))
     
     @staticmethod
     def get_variables_names():
@@ -181,4 +182,4 @@ if __name__ == '__main__':
     spotfxt = SpotFXTrade.get_trade_example()
     #print(spotfxt.__dict__)
     #print(spotfxt.to_string())
-    print(SpotFXTrade.__init__)
+    print(spotfxt)

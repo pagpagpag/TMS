@@ -7,11 +7,10 @@ Created on Sep 9, 2013
 '''
 import pprint
 import inspect
-from os.path import exists
 from abc import abstractmethod, ABCMeta
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, DateTime
 from sqlalchemy.engine.result import ResultProxy
-from checking_tools import check_trade
+from checking_tools import check_trade, check_integrity_columns
 
 DATABASE_FILE = 'trade_management_system.db'    
 DATABASE_PATH = "sqlite:///" + DATABASE_FILE
@@ -43,36 +42,20 @@ class TMSDataBase(object):
     def __get_table(self):
         db = create_engine(DATABASE_PATH)
         db.echo = False  # turn off verbose mode
-        metadata = MetaData(db)
-        if not exists(DATABASE_FILE):
-            self.__create_table_if_first_time(metadata)
-        return Table(self.table_name, metadata, autoload=True)
-        
-    def __create_table_if_first_time(self, metadata):
-        """ create the sql table only the first time"""
         columns_sql = self._get_columns_sql()
-        self.__check_integrity_columns_first_time(columns_sql)
-        table = Table(self.table_name, metadata, *columns_sql)
-        table.create()
-        
-    def __check_integrity_columns_first_time(self, columns_sql):
-        """ check that columns names are exactly the class values
-            we need this for the mapping SQL / python
-        """
-        def_names_sql = self.__get_columns_from_sql_formating(columns_sql)
-        def_names_class = inspect.signature(self.trade_class).parameters
-        if set(def_names_class) != set(def_names_sql):
-            raise NameError("")
-        
-    def __get_columns_from_sql_formating(self, columns_sql):
-        return list((str(columns_sql[i]) for i in range(0, len(columns_sql))))
+        check_integrity_columns(columns_sql, self.trade_class)
+        table = Table(self.table_name, MetaData(db), *columns_sql)
+        # create the table if it doesn't exist
+        table.create(checkfirst=True)
+        return table
         
     def __mapper(self, result_proxy):
         """ return the list of trades from a SQL select query
             yes, it does the job of orm.__mapper but here we can keep our own classes
-            however, this could be rewritten #TODO
+            however, this could be rewritten #TODO:s
         """
-        columns = self.__get_columns_from_sql_formating(self._get_columns_sql())
+        columns_sql = self._get_columns_sql()
+        columns = list((str(columns_sql[i]) for i in range(0, len(columns_sql))))
         kwargs_columns_entry = list({col: field 
                                      for (col, field) in zip(columns, entry)}
                                      for entry in list(result_proxy))
@@ -89,7 +72,6 @@ class TMSDataBase(object):
         return None if not list_of_trades else list_of_trades[0]
         
     def cancel_trade(self, id):
-        """ return True if the trade was canceled"""
         if not self.select_trade_from_id(id):
             raise ValueError("Cannot cancel trade %d because it doesn't exist" % id)
         self.__table.delete().where(self.__table.c.id == id).execute()
@@ -104,21 +86,23 @@ class TMSDataBase(object):
             update_req = self.__table.update().where(self.__table.c.id == id)
             update_req.values(columns_sql_with_trade_values).execute()
         
-    def amend_trade_with_field(self, id, field, value):
-        """ amend only a field of a trade from its id """
+    def amend_trade_with_fields(self, id, fields_values_dict):
+        """ amend multiple fields of a trade from its id """
         trade_original = self.select_trade_from_id(id)
         if trade_original is None:
             raise ValueError("Cannot amend trade %d because it doesn't exist" % id)
         var_dict = trade_original.get_variables_dict()
-        var_dict[field] = value # replace in the dict
-        trade_copy = self.trade_class(**var_dict)
-        print("B", trade_copy.__str__)
-        self.amend_trade_with_trade(id, trade_copy)
+        for field in fields_values_dict:
+            var_dict[field] = fields_values_dict[field]
+        amended_trade = self.trade_class(**var_dict)
+        self.amend_trade_with_trade(id, amended_trade)
+        
+    def amend_trade_with_field(self, id, field, value):
+        """ amend only a field of a trade from its id """
+        self.amend_trade_with_fields(id, {field: value})
         
     def display_table(self):
-        select_cmd = self.__table.select()
-        select_cmd_res = select_cmd.execute()
-        pprint.pprint([row for row in select_cmd_res])
+        pprint.pprint([row for row in self.__table.select().execute()])
         
     def get_all_table_as_trades(self):
         return self.__mapper(self.__table.select().execute())

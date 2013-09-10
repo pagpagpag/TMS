@@ -4,6 +4,7 @@ Created on Sep 9, 2013
 @author: pierreadrienguez
 '''
 import functools
+import inspect
 
 TRADERS_LIST = ["damien", "pierre"]
 
@@ -68,3 +69,14 @@ def year_check(year):
 def month_check(month):
     if not 0 < month < 13:
         raise ValueError("Impossible month: %d" % month)
+    
+    
+        
+def check_integrity_columns(columns_sql, trade_class):
+    """ check that columns names are exactly the class values
+        integrity of the SQL / python mapping
+    """
+    def_names_sql = list((str(columns_sql[i]) for i in range(0, len(columns_sql))))
+    def_names_class = inspect.signature(trade_class).parameters
+    if set(def_names_class) != set(def_names_sql):
+        raise NameError("")
