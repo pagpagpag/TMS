@@ -20,11 +20,13 @@ from trade_models import FuturesTrade, SpotFXTrade
 from db_helper import clean_all_tables, display_all_tables
 from db_helper import get_holdings, display_all_holdings
 from db_management import TMSDataBaseConfig, TMSDataBase
+from tms_constants import TEST_MODE_PARSING, FORCE_CLEAN_PARSING,\
+    VERBOSE_PARSING
 
 
-DB_CONFIG_PARSING = TMSDataBaseConfig(test_mode=False,
-                                      force_clean=True,
-                                      verbose=True)
+DB_CONFIG_PARSING = TMSDataBaseConfig(test_mode=TEST_MODE_PARSING,
+                                      force_clean=FORCE_CLEAN_PARSING,
+                                      verbose=VERBOSE_PARSING)
 
 INSTRUCTIONS_EXAMPLE_FILE_NAME = "instructions_example.csv"
 
@@ -98,6 +100,7 @@ def get_arg_to_add_trade_from_parsing(trade_class, id_, args):
             trade_kwargs[var_name] = parse_date(var_value)
         else:
             trade_kwargs[var_name] = var_type(var_value)
+    print(trade_kwargs)
     trade = trade_class(**trade_kwargs)
     return trade
 

@@ -12,11 +12,13 @@ from trade_models import FuturesTrade, SpotFXTrade
 from db_management import TMSDataBaseConfig, TMSDataBase
 from db_helper import get_db
 from checking_tools import IntegrityError
+from tms_constants import TEST_MODE_UNITTEST, FORCE_CLEAN_UNITTEST,\
+    VERBOSE_UNITTEST
 
 
-DB_CONFIG_TESTS = TMSDataBaseConfig(test_mode=True,
-                                    force_clean=True,
-                                    verbose=False)
+DB_CONFIG_TESTS = TMSDataBaseConfig(test_mode=TEST_MODE_UNITTEST,
+                                    force_clean=FORCE_CLEAN_UNITTEST,
+                                    verbose=VERBOSE_UNITTEST)
 
 
 class TMSTests(unittest.TestCase):

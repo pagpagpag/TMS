@@ -9,25 +9,13 @@ Created on Sep 9, 2013
 import pprint
 import datetime
 from collections import namedtuple
-from sqlalchemy import create_engine, MetaData, Table
-from sqlalchemy import Column, Integer, String, DateTime, Float
+from sqlalchemy import create_engine, MetaData, Table, String, DateTime, Float
+from sqlalchemy import Column, Integer
 from checking_tools import check_trade, check_integrity_columns
 from trade_models import FuturesTrade, SpotFXTrade, check_trade_class
-
-
-DATABASE_FILE = 'trade_management_system.db'
-DATABASE_FILE_TEST = 'trade_management_system_test.db'
-DATABASE_PATH = "sqlite:///" + DATABASE_FILE
-DATABASE_PATH_TEST = "sqlite:///" + DATABASE_FILE_TEST
-
-#if you don't specify otherwise, you will access the testing database
-TEST_MODE_DEFAULT = True
-
-#if you don't specify force_clean, a message will ask you 
-#if you really want to clean a table 
-FORCE_CLEAN_DEFAULT = False
-
-VERBOSE_DEFAULT = True
+from tms_constants import TEST_MODE_DEFAULT, FORCE_CLEAN_DEFAULT,\
+    VERBOSE_DEFAULT, DATABASE_PATH, DATABASE_PATH_TEST
+    
 
 
 TYPE_TO_SQL_TYPE = {datetime.datetime: DateTime,
@@ -35,7 +23,6 @@ TYPE_TO_SQL_TYPE = {datetime.datetime: DateTime,
                     int: Integer,
                     float: Float,
                     str: String}
-
 
 TMSDataBaseConfig = namedtuple("TMSDataBaseConfig", ("test_mode", "force_clean", "verbose"))
 

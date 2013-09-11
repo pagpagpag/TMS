@@ -13,18 +13,6 @@ from checking_tools import IntegrityError, typecheck, trader_check, \
     currency_pair_check, price_futures_check, price_spotfx_check
 
 
-# the following is redundant from __new__ method of each trade class
-# it is basically the signature
-# but it will look less like magic
-FUTURES_TRADE_VARIABLES_NAMES_NO_ID = ["datetime", "symbol", "month", 
-                                       "year", "num_contracts", "price", "trader"]
-FUTURES_TRADE_VARIABLES_TYPES_NO_ID = [datetime.datetime, str, int, 
-                                 int, int, float, str]
-SPOT_FX_TRADE_VARIABLES_NAMES_NO_ID = ["datetime", "currency_pair",
-                                       "size", "price", "trader"]
-SPOT_FX_TRADE_VARIABLES_TYPES_NO_ID = [datetime.datetime, str,
-                                       int, float, str]
-
 #TRADE_CLASSES is defined at the bottom to avoid recursive import
 
 
@@ -34,25 +22,30 @@ class Trade(tuple):
         that's why we use tuple and __new__ instead of __init__
     """
     __metaclass__ = ABCMeta
-    variables_names_no_id = None
-    variables_types_no_id = None
-    
-    @classmethod
-    def get_variables_names_no_id(cls):
-        """ define the variables"""
-        if cls.variables_names_no_id == None:
-            raise TypeError("Cannot instantiate Trade abstract class")
-        return cls.variables_names_no_id
-    
-    @classmethod
-    def get_variables_types_no_id(cls):
-        """ define the variables"""
-        return cls.variables_types_no_id
     
     @classmethod
     def get_variables_names(cls):
         """ define the variables"""
-        return ["id"] + cls.variables_names_no_id
+        cls_, *var_names = cls.__new__.__code__.co_varnames
+        return list(var_names)
+    
+    @classmethod
+    def get_variables_types(cls):
+        """ define the variables"""
+        return [cls.__new__.__annotations__.get(arg) 
+                for arg in cls.get_variables_names()]
+    
+    @classmethod
+    def get_variables_names_no_id(cls):
+        """ define the variables"""
+        cls_, id_, *var_names = cls.__new__.__code__.co_varnames
+        return list(var_names)
+    
+    @classmethod
+    def get_variables_types_no_id(cls):
+        """ define the variables"""
+        return [cls.__new__.__annotations__.get(arg) 
+                for arg in cls.get_variables_names_no_id()]
     
     def __setattr__(self, *ignored):
         """ trade are immutable objects
@@ -92,7 +85,7 @@ class FuturesTrade(Trade):
     @typecheck
     def __new__(cls,
                 id: int, 
-                datetime: datetime,
+                datetime: datetime.datetime,
                 symbol: str,
                 month: int,
                 year: int,
@@ -107,9 +100,6 @@ class FuturesTrade(Trade):
         price_futures_check(price, symbol, month, year)
         return tuple.__new__(cls, 
             (id, datetime, symbol, month, year, num_contracts, price, trader))
-    
-    variables_names_no_id = FUTURES_TRADE_VARIABLES_NAMES_NO_ID
-    variables_types_no_id = FUTURES_TRADE_VARIABLES_TYPES_NO_ID
     
     @property
     def instruments_positions(self):
@@ -163,7 +153,7 @@ class SpotFXTrade(Trade):
     @typecheck
     def __new__(cls,
                 id: int,
-                datetime: datetime,
+                datetime: datetime.datetime,
                 currency_pair: str, 
                 size: int,
                 price: float,
@@ -173,9 +163,6 @@ class SpotFXTrade(Trade):
         trader_check(trader)
         price_spotfx_check(price, currency_pair)
         return tuple.__new__(cls, (id, datetime, currency_pair, size, price, trader))
-    
-    variables_names_no_id = SPOT_FX_TRADE_VARIABLES_NAMES_NO_ID
-    variables_types_no_id = SPOT_FX_TRADE_VARIABLES_TYPES_NO_ID
     
     @property
     def instruments_positions(self):

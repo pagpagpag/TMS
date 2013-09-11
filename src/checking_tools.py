@@ -9,14 +9,15 @@ Created on Sep 9, 2013
 import functools
 import inspect
 import datetime
+from decorator import decorator
+from tms_constants import TRADERS_LIST
 
-
-TRADERS_LIST = ["damien", "pierre"]
 
 class IntegrityError(Exception):
     pass
 
-def typecheck(f):
+@decorator   
+def typecheck(f, *args, **kws):
     """ useful type checking decorator from annotations when types are used
         potentially check parameters and return type
     """
@@ -39,7 +40,7 @@ def typecheck(f):
                              "%s is not of type %s when calling %s" %
                              (result, returntype, f.__qualname__))
         return result
-    return decorated
+    return decorated(*args, **kws)
     
 def check_trade(trade, trade_class):
     """ check if the instance trade belongs to the desired class"""
