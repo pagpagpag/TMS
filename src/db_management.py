@@ -21,9 +21,18 @@ DATABASE_FILE_TEST = 'trade_management_system_test.db'
 DATABASE_PATH = "sqlite:///" + DATABASE_FILE
 DATABASE_PATH_TEST = "sqlite:///" + DATABASE_FILE_TEST
 
+#if you don't specify otherwise, you will access the testing database
 TEST_MODE_DEFAULT = True
-VERBOSE_DEFAULT = True
+
+#if you don't specify force_clean, a message will ask you 
+#if you really want to clean a table 
 FORCE_CLEAN_DEFAULT = False
+
+VERBOSE_DEFAULT = True
+
+DB_CONFIG_DEFAULT = {"test_mode": TEST_MODE_DEFAULT,
+                     "force_clean": FORCE_CLEAN_DEFAULT,
+                     "verbose": VERBOSE_DEFAULT}
 
 TYPE_TO_SQL_TYPE = {datetime.datetime: DateTime,
                     str: String,
@@ -36,13 +45,15 @@ class TMSDataBase(object):
     """ all the operations within the database have to be encapsulated here
     """
     
-    def __init__(self, trade_class, test_mode=TEST_MODE_DEFAULT):
+    def __init__(self, trade_class, config = DB_CONFIG_DEFAULT):
         """ use test_mode by being True by default such that you have to stipulate
             test_mode=False if you want to access the real database
         """
         check_trade_class(trade_class)
         self.trade_class = trade_class
-        self.test_mode = test_mode
+        self.test_mode = config["test_mode"]
+        self.verbose = config["verbose"]
+        self.force_clean = config["force_clean"]
         self.table_name = self.trade_class.__name__
         self.__table = self.__get_table()
         
@@ -120,18 +131,18 @@ class TMSDataBase(object):
         """ amend only a field of a trade from its id """
         self.amend_trade_with_fields(id_, {field: value})
         
-    def display_table(self, verbose=VERBOSE_DEFAULT):
-        if verbose:
+    def display_table(self):
+        if self.verbose:
             print("Table %s:" % self.trade_class.__name__)
         pprint.pprint([str(row) for row in self.get_all_table_as_trades()])
         
-    def clean_table(self, force_clean=FORCE_CLEAN_DEFAULT, verbose=VERBOSE_DEFAULT):
+    def clean_table(self):
         """ dangerous function"""
-        if force_clean or input("Are you sure you want to DELETE the __table %s ? (Y/N)"
+        if self.force_clean or input("Are you sure you want to DELETE the __table %s ? (Y/N)"
                      % self.table_name) == 'Y':
-            self.__table.delete().execute()
-            if verbose:
-                print("Table %s is now empty" % self.table_name)
+                self.__table.delete().execute()
+                if self.verbose:
+                    print("Table %s is now empty" % self.table_name)
                 
     def get_all_table_as_trades(self):
         """ useful request to get all info from the table

@@ -10,9 +10,15 @@ Created on Sep 9, 2013
 import unittest
 import datetime
 from trade_models import FuturesTrade, SpotFXTrade
-from db_management import TMSDataBase, TEST_MODE_DEFAULT
+from db_management import TMSDataBase, DB_CONFIG_DEFAULT
 from db_helper import get_db
 from checking_tools import IntegrityError
+
+
+DB_CONFIG_TESTS = {"test_mode": True,
+                   "force_clean": True,
+                   "verbose": False}
+
 
 class TMSTests(unittest.TestCase):
     """ we use classes variables to run all the tests with different parameters
@@ -25,19 +31,20 @@ class TMSTests(unittest.TestCase):
     
     def setUp(self):
         """ request and clean the table before each test"""
-        self.db = get_db(self.trade_class, TEST_MODE_DEFAULT)
-        self.db.clean_table(force_clean=True, verbose=False)
+        config = DB_CONFIG_TESTS
+        self.db = get_db(self.trade_class, config)
+        self.db.clean_table()
         
     def tearDown(self):
         """ clean the table after each test"""
-        self.db.clean_table(force_clean=True, verbose=False)
+        self.db.clean_table()
         
     def test_create_futures_trade_example(self):
         trade_example = self.trade_class.get_trade_example()
         self.assertTrue(isinstance(trade_example, self.trade_class))
         
     def test_create_db(self):
-        self.assertTrue(isinstance(get_db(self.trade_class, TEST_MODE_DEFAULT), TMSDataBase))
+        self.assertTrue(isinstance(get_db(self.trade_class, DB_CONFIG_DEFAULT), TMSDataBase))
  
     def test_create_futures_trade(self):
         if self.trade_class == FuturesTrade:
