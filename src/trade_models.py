@@ -1,12 +1,16 @@
+#!/usr/bin/env python3
+
 '''
 Created on Sep 9, 2013
 
 @author: pierreadrienguez
+@status: production
+@version: 1
 '''
 import datetime
 from abc import abstractmethod, ABCMeta
-from checking_tools import typecheck, trader_check, symbol_check, year_check,\
-    month_check, datetime_check, currency_pair_check
+from checking_tools import IntegrityError, typecheck, trader_check, \
+    symbol_check, year_check, month_check, datetime_check, currency_pair_check
 
 
 FUTURES_TRADE_VARIABLES_NAMES = ["id", "datetime", "symbol", "month", 
@@ -16,7 +20,10 @@ SPOT_FX_TRADE_VARIABLES_NAMES = ["id", "datetime", "currency_pair",
 
 
 class Trade(tuple):
-    """ abstract class for trade object"""
+    """ abstract class for trade object
+        trades are immutable in order to keep the integrity of the database
+        that's why we use tuple and __new__ instead of __init__
+    """
     __metaclass__ = ABCMeta
     
     @staticmethod
@@ -28,12 +35,12 @@ class Trade(tuple):
     def __setattr__(self, *ignored):
         """ trade are immutable objects
         in order to keep the integrity of the database"""
-        return NotImplemented
+        raise IntegrityError("Cannot set attribute of an existing trade")
 
     def __delattr__(self, *ignored):
         """ trade are immutable objects
         in order to keep the integrity of the database"""
-        return NotImplemented
+        raise IntegrityError("Cannot delete attribute of an existing trade")
     
     def __str__(self):
         variables_names = self.get_variables_names()
@@ -171,15 +178,3 @@ class SpotFXTrade(Trade):
     def get_trade_example():
         dt = datetime.datetime(2013, 9, 9, 9, 0, 0)
         return SpotFXTrade(-1, dt, "AUDUSD", 1000000.0, 0.9205, "damien")
-    
-    
-if __name__ == '__main__':
-    dt = datetime.datetime(2013, 9, 9, 9, 0, 0)
-    ft = FuturesTrade(-1, dt, "RX", 12, 2013, -15, 137.52, "pierre")
-    print(type, ft)
-    print(ft.get_variables_dict())
-    
-    spotfxt = SpotFXTrade.get_trade_example()
-    #print(spotfxt.__dict__)
-    #print(spotfxt.to_string())
-    print(spotfxt)

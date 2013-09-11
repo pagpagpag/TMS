@@ -1,7 +1,11 @@
+#!/usr/bin/env python3
+
 '''
 Created on Sep 9, 2013
 
 @author: pierreadrienguez
+@status: production
+@version: 1
 '''
 from sqlalchemy import Column, Integer, String, DateTime, Float
 from trade_models import FuturesTrade, SpotFXTrade
@@ -39,9 +43,3 @@ class TMSDataBaseSpotFX(TMSDataBase):
                 Column('price', Float),
                 Column('trader', String)
                 )
-        
-if __name__ == '__main__':
-    ft = FuturesTrade.get_trade_example()
-    print(ft.__str__())
-    db = TMSDataBaseSpotFX()
-    print(db.get_all_table_as_trades())

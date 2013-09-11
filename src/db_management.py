@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
+
 '''
 Created on Sep 9, 2013
 
 @author: pierreadrienguez
-
-
+@status: production
+@version: 1
 '''
 import pprint
 import inspect
@@ -12,8 +14,12 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 from sqlalchemy.engine.result import ResultProxy
 from checking_tools import check_trade, check_integrity_columns
 
-DATABASE_FILE = 'trade_management_system.db'    
+DATABASE_FILE = 'trade_management_system.db'
+DATABASE_FILE_TEST = 'trade_management_system_test.db'
 DATABASE_PATH = "sqlite:///" + DATABASE_FILE
+DATABASE_PATH_TEST = "sqlite:///" + DATABASE_FILE_TEST
+
+TEST_MODE_DEFAULT = True
 
 class TMSDataBase(object):
     """ all the operations within the data base have to be encapsulated here
@@ -21,7 +27,11 @@ class TMSDataBase(object):
     """
     __metaclass__ = ABCMeta
     
-    def __init__(self):
+    def __init__(self, test_mode=TEST_MODE_DEFAULT):
+        """ use test_mode by being True by default such that you have to stipulate
+            test_mode=False if you want to access the real database
+        """
+        self.test_mode = test_mode
         self._define_trade_class() # from a child class
         self.table_name = self.trade_class.__name__
         self.__table = self.__get_table()
@@ -40,7 +50,7 @@ class TMSDataBase(object):
         """
     
     def __get_table(self):
-        db = create_engine(DATABASE_PATH)
+        db = create_engine(DATABASE_PATH if not self.test_mode else DATABASE_PATH_TEST)
         db.echo = False  # turn off verbose mode
         columns_sql = self._get_columns_sql()
         check_integrity_columns(columns_sql, self.trade_class)
@@ -107,9 +117,10 @@ class TMSDataBase(object):
     def get_all_table_as_trades(self):
         return self.__mapper(self.__table.select().execute())
         
-    def clean_table(self):
+    def clean_table(self, force_clean=False, verbose=True):
         """ dangerous function"""
-        if input("Are you sure you want to DELETE the __table %s ? (Y/N)"
+        if force_clean or input("Are you sure you want to DELETE the __table %s ? (Y/N)"
                      % self.table_name) == 'Y':
             self.__table.delete().execute()
-            print("Table %s is now empty" % self.table_name)
+            if verbose:
+                print("Table %s is now empty" % self.table_name)

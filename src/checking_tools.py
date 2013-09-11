@@ -1,12 +1,19 @@
+#!/usr/bin/env python3
+
 '''
 Created on Sep 9, 2013
 
 @author: pierreadrienguez
+@status: production
+@version: 1
 '''
 import functools
 import inspect
 
 TRADERS_LIST = ["damien", "pierre"]
+
+class IntegrityError(Exception):
+    pass
 
 def typecheck(f):
     """ useful type checking decorator from annotations when types are used
@@ -37,6 +44,7 @@ def typecheck(f):
     return decorated
     
 def check_trade(trade, trade_class):
+    """ check if the instance trade belongs to the desired class"""
     if not isinstance(trade, trade_class):
         message = trade.to_string() if hasattr(trade, "to_string") else "Unknown"
         raise TypeError("The following is not a %s trade \n %s" % 
@@ -44,21 +52,26 @@ def check_trade(trade, trade_class):
     return True    
     
 def datetime_check(datetime):
+    """ check if the datetime is not incorrect"""
     pass #TODO
     
 def trader_check(trader):
+    """ only authorized persons can trade"""
     if trader not in TRADERS_LIST:
         raise ValueError("Trader %s traded but is not in the list of traders" % trader)
             
 def symbol_check(symbol):
+    """ check if symbol is in the list of futures instrument"""
     # TODO:
     pass
 
 def currency_pair_check(currency_pair):
-    # TODOm
+    """ check if this currency_pair exists"""
+    # TODO:
     pass
 
 def year_check(year):
+    """ check if the maturity year is not stupid"""
     if year < 2012:
         raise ValueError("How did you trade an expired product " +
                          "(expired in %d)?" % year)
@@ -67,10 +80,9 @@ def year_check(year):
                          " a big maturity (expiration year %d)?" % year)
     
 def month_check(month):
+    """ check if a month int value is correct"""
     if not 0 < month < 13:
         raise ValueError("Impossible month: %d" % month)
-    
-    
         
 def check_integrity_columns(columns_sql, trade_class):
     """ check that columns names are exactly the class values
