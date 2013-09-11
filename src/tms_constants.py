@@ -9,10 +9,11 @@ TRADERS_LIST = ["damien", "pierre"]
 
 DATABASE_FILE = 'trade_management_system.db'
 DATABASE_FILE_TEST = 'trade_management_system_test.db'
+
 DATABASE_PATH = "sqlite:///" + DATABASE_FILE
 DATABASE_PATH_TEST = "sqlite:///" + DATABASE_FILE_TEST
 
-#if you don't specify otherwise, you will:
+# if you don't specify otherwise, you will:
 # access the testing database
 # be ask if you really want to clean a table
 # get some messages
