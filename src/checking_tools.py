@@ -9,6 +9,8 @@ Created on Sep 9, 2013
 '''
 import functools
 import inspect
+import datetime
+
 
 TRADERS_LIST = ["damien", "pierre"]
 
@@ -28,16 +30,13 @@ def typecheck(f):
                 # First len(args) are positional, after that keywords
                 value_to_test = args[i] if i < len(args) else kws[arg]
                 if not isinstance(value_to_test, argtype):
-                    raise ValueError("Wrong parameter: %s is not of type " +
-                                     "%s when calling %s with %s" %
-                                      (value_to_test, argtype, 
-                                       f.__qualname__, arg))
+                    raise TypeError("%s is not of type %s when calling %s with %s" %
+                    (value_to_test, argtype, f.__qualname__, arg))
         # check the return type
         result = f(*args, **kws)
         returntype = f.__annotations__.get('return')
         if returntype is not None and not isinstance(returntype, type):
-            print(result, returntype, type)
-            raise ValueError("Wrong return type: " +
+            raise TypeError("Wrong return type: " +
                              "%s is not of type %s when calling %s" %
                              (result, returntype, f.__qualname__))
         return result
@@ -51,33 +50,39 @@ def check_trade(trade, trade_class):
                         (trade_class.__name__, message))
     return True    
     
-def datetime_check(datetime):
+def datetime_check(datetime_):
     """ check if the datetime is not incorrect"""
-    pass #TODO
+    if not (datetime.datetime(1900, 1,1) < datetime_ < datetime.datetime(2100, 1, 1)):
+        raise ValueError("Please check the date %s" % datetime_)    
     
 def trader_check(trader):
     """ only authorized persons can trade"""
     if trader not in TRADERS_LIST:
-        raise ValueError("Trader %s traded but is not in the list of traders" % trader)
+        raise ValueError("Trader %s traded but is not in the list of traders"
+                         % trader)
             
 def symbol_check(symbol):
-    """ check if symbol is in the list of futures instrument"""
-    # TODO:
+    """ check if the symbol exist"""
+    if (len(symbol) == 0):
+        raise ValueError("Symbol %s of length 0 detected" % symbol)
+    # TODO: check if symbol is in the list of futures instrument
     pass
 
 def currency_pair_check(currency_pair):
     """ check if this currency_pair exists"""
-    # TODO:
+    if len(currency_pair) != 6:
+        raise ValueError("%s is not a currency pair" % currency_pair)
+    # TODO: check from a list of all existing currency pairs
     pass
 
 def year_check(year):
     """ check if the maturity year is not stupid"""
-    if year < 2012:
-        raise ValueError("How did you trade an expired product " +
-                         "(expired in %d)?" % year)
+    if year < 2000:
+        raise ValueError("Please check the maturity year %s which looks expired"
+                         % year)
     if year > 2100:
-        raise ValueError("How can you trade a product with such " +
-                         " a big maturity (expiration year %d)?" % year)
+        raise ValueError("Please check the maturity year %s which looks too far"
+                         % year)
     
 def month_check(month):
     """ check if a month int value is correct"""
@@ -91,4 +96,17 @@ def check_integrity_columns(columns_sql, trade_class):
     def_names_sql = list((str(columns_sql[i]) for i in range(0, len(columns_sql))))
     def_names_class = inspect.signature(trade_class).parameters
     if set(def_names_class) != set(def_names_sql):
-        raise NameError("")
+        raise IntegrityError("The integrity of the columns have been damaged")
+
+def price_futures_check(price, symbol, month, year):
+    # TODO:
+    pass
+
+def price_spotfx_check(price, currency_pair):
+    # for example
+    if ((currency_pair == "EURGBP" and not (0.5 < price < 1.2))
+            or (currency_pair == "EURUSD" and not (0.6 < price < 1.8))
+            or (currency_pair == "GBPUSD" and not (0.7 < price < 2.3))):
+        raise ValueError("Please check that you traded %d at %d" %
+                         (currency_pair, price))
+    pass
