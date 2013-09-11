@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 '''
 Created on Sep 11, 2013
 
@@ -20,11 +19,12 @@ from collections import defaultdict
 from trade_models import FuturesTrade, SpotFXTrade
 from db_helper import clean_all_tables, display_all_tables
 from db_helper import get_holdings, display_all_holdings
-from db_management import TMSDataBase
+from db_management import TMSDataBaseConfig, TMSDataBase
 
-DB_CONFIG_PARSING = {"test_mode": False,
-                     "force_clean": True,
-                     "verbose": True}
+
+DB_CONFIG_PARSING = TMSDataBaseConfig(test_mode=False,
+                                      force_clean=True,
+                                      verbose=True)
 
 INSTRUCTIONS_EXAMPLE_FILE_NAME = "instructions_example.csv"
 
@@ -56,7 +56,7 @@ class ParseTradesFiles():
     def run(self):
         """ read instruction in the file line per line"""
         with open(self.file_name, 'r') as csvfile:
-            if self.config["verbose"]:
+            if self.config.verbose:
                 print("Parsing %s" % self.file_name)
             filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
             self.counter = defaultdict(int)

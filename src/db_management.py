@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 '''
 Created on Sep 9, 2013
 
@@ -9,7 +8,7 @@ Created on Sep 9, 2013
 '''
 import pprint
 import datetime
-from abc import abstractmethod, ABCMeta
+from collections import namedtuple
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy import Column, Integer, String, DateTime, Float
 from checking_tools import check_trade, check_integrity_columns
@@ -30,9 +29,6 @@ FORCE_CLEAN_DEFAULT = False
 
 VERBOSE_DEFAULT = True
 
-DB_CONFIG_DEFAULT = {"test_mode": TEST_MODE_DEFAULT,
-                     "force_clean": FORCE_CLEAN_DEFAULT,
-                     "verbose": VERBOSE_DEFAULT}
 
 TYPE_TO_SQL_TYPE = {datetime.datetime: DateTime,
                     str: String,
@@ -41,19 +37,19 @@ TYPE_TO_SQL_TYPE = {datetime.datetime: DateTime,
                     str: String}
 
 
+TMSDataBaseConfig = namedtuple("TMSDataBaseConfig", ("test_mode", "force_clean", "verbose"))
+
+DB_CONFIG_DEFAULT = TMSDataBaseConfig(TEST_MODE_DEFAULT, 
+                                      FORCE_CLEAN_DEFAULT,
+                                      VERBOSE_DEFAULT)
+    
 class TMSDataBase(object):
     """ all the operations within the database have to be encapsulated here
     """
-    
     def __init__(self, trade_class, config = DB_CONFIG_DEFAULT):
-        """ use test_mode by being True by default such that you have to stipulate
-            test_mode=False if you want to access the real database
-        """
         check_trade_class(trade_class)
         self.trade_class = trade_class
-        self.test_mode = config["test_mode"]
-        self.verbose = config["verbose"]
-        self.force_clean = config["force_clean"]
+        self.config = config
         self.table_name = self.trade_class.__name__
         self.__table = self.__get_table()
         
@@ -70,7 +66,7 @@ class TMSDataBase(object):
         return ccc
     
     def __get_table(self):
-        db = create_engine(DATABASE_PATH if not self.test_mode else DATABASE_PATH_TEST)
+        db = create_engine(DATABASE_PATH if not self.config.test_mode else DATABASE_PATH_TEST)
         db.echo = False  # turn off verbose mode
         columns_sql = self.__get_columns_sql()
         check_integrity_columns(columns_sql, self.trade_class)
@@ -132,16 +128,16 @@ class TMSDataBase(object):
         self.amend_trade_with_fields(id_, {field: value})
         
     def display_table(self):
-        if self.verbose:
+        if self.config.verbose:
             print("Table %s:" % self.trade_class.__name__)
         pprint.pprint([str(row) for row in self.get_all_table_as_trades()])
         
     def clean_table(self):
         """ dangerous function"""
-        if self.force_clean or input("Are you sure you want to DELETE the __table %s ? (Y/N)"
+        if self.config.force_clean or input("Are you sure you want to DELETE the __table %s ? (Y/N)"
                      % self.table_name) == 'Y':
                 self.__table.delete().execute()
-                if self.verbose:
+                if self.config.verbose:
                     print("Table %s is now empty" % self.table_name)
                 
     def get_all_table_as_trades(self):

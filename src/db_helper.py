@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 '''
 Created on Sep 9, 2013
 
@@ -7,7 +6,9 @@ Created on Sep 9, 2013
 @status: production
 @version: 1
 
-all these functions work by themselves
+minimalist functions which work by themselves
+they all call an instance of the db
+so be sure you don't need to do multiple requests
 '''
 import pprint
 from collections import defaultdict

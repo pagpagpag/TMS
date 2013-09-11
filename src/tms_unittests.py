@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 '''
 Created on Sep 9, 2013
 
@@ -10,14 +9,14 @@ Created on Sep 9, 2013
 import unittest
 import datetime
 from trade_models import FuturesTrade, SpotFXTrade
-from db_management import TMSDataBase, DB_CONFIG_DEFAULT
+from db_management import TMSDataBaseConfig, TMSDataBase
 from db_helper import get_db
 from checking_tools import IntegrityError
 
 
-DB_CONFIG_TESTS = {"test_mode": True,
-                   "force_clean": True,
-                   "verbose": False}
+DB_CONFIG_TESTS = TMSDataBaseConfig(test_mode=True,
+                                    force_clean=True,
+                                    verbose=False)
 
 
 class TMSTests(unittest.TestCase):
@@ -44,7 +43,7 @@ class TMSTests(unittest.TestCase):
         self.assertTrue(isinstance(trade_example, self.trade_class))
         
     def test_create_db(self):
-        self.assertTrue(isinstance(get_db(self.trade_class, DB_CONFIG_DEFAULT), TMSDataBase))
+        self.assertTrue(isinstance(get_db(self.trade_class, DB_CONFIG_TESTS), TMSDataBase))
  
     def test_create_futures_trade(self):
         if self.trade_class == FuturesTrade:
