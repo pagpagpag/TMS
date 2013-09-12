@@ -42,10 +42,8 @@ class TMSDataBase(object):
         self.__table = self.__get_table()
 
     def __get_columns_sql(self):
-        """ full documented __table
-            the names have to match the names of the class
-            (this will be checked)
-            return a tuple of 'sqlalchemy.schema.Column'
+        """ get the columns from the "signature" of the Trade class
+            (bit of white magic)
         """
         ccc = [Column('id_', Integer, primary_key=True)]
         for name, type_ in zip(self.trade_class.get_variables_names_no_id(),
@@ -87,7 +85,8 @@ class TMSDataBase(object):
 
     def cancel_trade(self, id_):
         if not self.select_trade_from_id(id_):
-            raise ValueError("Cannot cancel trade %d because it doesn't exist" % id_)
+            raise ValueError("Cannot cancel trade %d in %s because it doesn't exist"
+                             % (id_, self.table_name))
         self.__table.delete().where(self.__table.c.id_ == id_).execute()
 
     def amend_trade_with_trade(self, id_, trade):
@@ -130,7 +129,11 @@ class TMSDataBase(object):
         if ok_to_cancel:
             self.__table.delete().execute()
             if self.config.verbose:
-                print("Table %s is now empty" % self.table_name)
+                if self.config.test_mode:
+                    message = "(TEST MODE) "
+                message += "Table %s is now empty"
+                print(message % self.table_name)
+
 
     def get_all_table_as_trades(self):
         """ useful request to get all info from the table

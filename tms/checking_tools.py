@@ -7,7 +7,6 @@ Created on Sep 9, 2013
 @version: 1
 '''
 import functools
-import inspect
 import datetime
 from decorator import decorator
 from tms_constants import TRADERS_LIST
@@ -93,8 +92,8 @@ def check_integrity_columns(columns_sql, trade_class):
     """ check that columns names are exactly the class values
         integrity of the SQL / python mapping
     """
-    def_names_sql = list((str(columns_sql[i]) for i in range(0, len(columns_sql))))
-    def_names_class = inspect.signature(trade_class).parameters
+    def_names_sql = [str(column_sql) for column_sql in columns_sql]
+    def_names_class = trade_class.get_variables_names()
     if set(def_names_class) != set(def_names_sql):
         raise IntegrityError("The integrity of the columns have been damaged")
 

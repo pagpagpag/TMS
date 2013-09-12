@@ -57,6 +57,9 @@ def get_holdings_from_trades(trades):
     for trade in trades:
         for instrument, position in trade.instruments_positions.items():
             holdings[instrument] += position
+    for instrument, position in list(holdings.items()):
+        if position == 0:
+            del holdings[instrument]
     return dict(holdings)
 
 def get_holdings(trade_class, config=DB_CONFIG_DEFAULT):
@@ -70,3 +73,8 @@ def display_holdings(trade_class, config=DB_CONFIG_DEFAULT):
 def display_all_holdings(config=DB_CONFIG_DEFAULT):
     for trade_class in TRADE_CLASSES:
         display_holdings(trade_class, config)
+
+if __name__ == '__main__':
+    display_all_tables()
+    print()
+    display_all_holdings()

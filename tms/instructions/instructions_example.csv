@@ -1,7 +1,7 @@
 add,futures,2013-09-09 09:00:00,RX,12,2013,-15,137.52,pierre
 add,spotfx,2013-09-09 09:00:00,AUDUSD,1000000,0.9205,damien
-add,futures,2013-09-09 09:00:01,RX,12,2013,15,137.49,pierre
-add,futures,2013-09-09 09:00:01,RX,12,2013,15,137.48,pierre
+add,futures,2013-09-09 09:00:03,RX,12,2013,15,137.49,pierre
+add,futures,2013-09-09 09:00:04,RX,12,2013,15,137.48,pierre
 amend,futures,1,price,137.53
 amend,spotfx,1,price,0.9206
 cancel,futures,3
